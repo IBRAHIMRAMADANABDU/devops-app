@@ -124,3 +124,5 @@ docker run -d --name backend -p 5000:5000 your_dockerhub_username/backend:latest
 - This guide assumes you have basic understanding of Terraform, Ansible, Docker, and Jenkins.
 
 ---
+![Website Screenshot](![Screenshot 2025-05-25 070852](https://github.com/user-attachments/assets/2c1080d8-7971-4e44-acbb-25b4e47bf67b)
+)
