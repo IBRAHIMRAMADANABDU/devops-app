@@ -1,9 +1,16 @@
 pipeline {
     agent any
-  
+
+    environment {
+        DOCKERHUB = credentials('docker-hun')  
+        DOCKERHUB_REPO_FRONTEND = 'ibr122/devops-app-frontend'
+        DOCKERHUB_REPO_BACKEND = 'ibr122/devops-app-backend'
+    }
+
     stages {
         stage('Checkout') {
             steps {
+               
                 checkout scm
             }
         }
@@ -24,10 +31,18 @@ pipeline {
             }
         }
 
-        stage('Push Images to Docker Hub') {
+        stage('Docker Login') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-id') {
+                    sh "docker login -u ${DOCKERHUB_USR} -p ${DOCKERHUB_PSW}"
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                script {
+                    docker.withRegistry('', 'docker-hun') {
                         docker.image("${DOCKERHUB_REPO_FRONTEND}:latest").push()
                         docker.image("${DOCKERHUB_REPO_BACKEND}:latest").push()
                     }
@@ -35,7 +50,7 @@ pipeline {
             }
         }
 
-        stage('Run Containers') {
+        stage('Deploy Containers') {
             steps {
                 script {
                     sh "docker rm -f frontend || true"
