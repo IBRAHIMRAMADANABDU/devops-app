@@ -1,0 +1,81 @@
+---
+- name: Prepare server with HTTP, Docker, and Jenkins
+  hosts: webserver
+  become: yes
+
+  vars:
+    jenkins_repo_url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    jenkins_key_url: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+  tasks:
+    # 1. Update packages
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+
+    # 2. Install HTTPD (Apache)
+    - name: Install Apache HTTPD
+      yum:
+        name: httpd
+        state: present
+
+    - name: Enable and start HTTPD
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    # 3. Install Docker
+    - name: Install required packages for Docker
+      yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+
+    - name: Add Docker repository
+      command: >
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      args:
+        creates: /etc/yum.repos.d/docker-ce.repo
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Enable and start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # 4. Install Jenkins
+    - name: Add Jenkins repo
+      get_url:
+        url: "{{ jenkins_repo_url }}"
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import Jenkins GPG key
+      rpm_key:
+        state: present
+        key: "{{ jenkins_key_url }}"
+
+    - name: Install Java (Jenkins dependency)
+      yum:
+        name: java-21-amazon-corretto
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Enable and start Jenkins
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
