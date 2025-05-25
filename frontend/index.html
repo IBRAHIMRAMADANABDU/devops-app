@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DevOps Project - Frontend</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #fff;
+      text-align: center;
+      padding: 80px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.5em;
+      color: #dcdcdc;
+    }
+
+    .card {
+      margin: 40px auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      width: 60%;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 1em;
+      background-color: #00c9a7;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #00a98f;
+    }
+
+    #backend-response {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #ffffcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Welcome to Our DevOps Project</h1>
+    <p>This is the Frontend powered by NGINX + Docker</p>
+    <button class="btn" onclick="getBackendStatus()">Check Backend Status</button>
+    <div id="backend-response"></div>
+  </div>
+
+  <script>
+    function getBackendStatus() {
+      fetch('http://backend:5000/status')
+        .then(response => response.json())
+        .then(data => {
+          const div = document.getElementById('backend-response');
+          div.innerHTML = 
+            <strong>Status:</strong> ${data.status} <br/>
+            <strong>Service:</strong> ${data.service} <br/>
+            <strong>Version:</strong> ${data.version}
+          ;
+        })
+        .catch(error => {
+          document.getElementById('backend-response').innerHTML = 'Error contacting backend.';
+          console.error('Error:', error);
+        });
+    }
+  </script>
+</body>
+</html>
